@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI Agent入门：什么是AI智能体，如何搭建自己的Agent">
+<title>AI Agent入门：什么是AI智能体，如何搭建自己的Agent - AI工具指南</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f5;color:#333;line-height:1.8}
+.container{max-width:800px;margin:0 auto;padding:20px}
+.breadcrumb{margin-bottom:20px;font-size:0.9em}
+.breadcrumb a{color:#0066cc;text-decoration:none}
+article{background:#fff;border-radius:8px;padding:30px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+h1{font-size:1.8em;margin-bottom:10px;color:#1a1a1a}
+h2{font-size:1.4em;margin:30px 0 15px;color:#1a1a1a;border-left:4px solid #0066cc;padding-left:12px}
+h3{font-size:1.15em;margin:20px 0 10px;color:#333}
+p{margin-bottom:15px}
+ul{margin:10px 0 15px 20px}
+li{margin-bottom:6px}
+strong{color:#1a1a1a}
+a{color:#0066cc}
+footer{text-align:center;padding:30px 0;color:#999;font-size:0.85em}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="breadcrumb"><a href="../index.html">← 首页</a></div>
+<article><h1>AI Agent入门：什么是AI智能体，如何搭建自己的Agent</h1><p>你是不是经常刷到“AI Agent”这个词，感觉它很厉害，但又不知道它到底能干嘛，更别提自己动手做一个了？别急，这篇文章就是为你准备的。我将用人话帮你拆解这个概念，并带你从零开始，搭建一个属于你自己的AI智能体，让你立刻上手体验这个正在改变游戏规则的技术。</p><h2>一、AI Agent到底是什么？别被名词唬住了</h2><p>简单来说，<strong>AI Agent</strong>（AI智能体）就是一个能“感知环境、进行思考、并采取行动”的AI程序。你可以把它想象成一个拥有“大脑”和“手脚”的数字员工。</p><p>普通的AI对话模型（比如聊天机器人）就像一个知识渊博的顾问，你问它答。而<strong>AI Agent</strong>更像是一个能独立干活的助理。它不仅能回答你的问题，还能帮你去“做事”：比如上网搜索最新信息、读取你电脑里的文件、调用计算器进行精确计算，甚至自动帮你写代码、订机票。</p><p>它的核心能力在于“自主决策”和“工具使用”。它会把大任务拆解成小步骤，自己决定先做什么、后做什么，并调用合适的工具去完成。</p><h2>二、拆解一个AI Agent的核心部件</h2><p>一个完整的<strong>AI代理</strong>通常由以下几个关键部分组成：</p><p>1.  <strong>大脑（LLM）</strong>：通常是像GPT-4、文心一言这样的大型语言模型，负责理解任务、进行推理和制定计划。
+2.  <strong>记忆（Memory）</strong>：包括短期的工作记忆（当前对话上下文）和长期的记忆库（存储重要信息和历史经验）。
+3.  <strong>规划（Planning）</strong>：将复杂任务分解为子任务，并制定执行策略的能力。
+4.  <strong>工具使用（Tool Use）</strong>：这是<strong>AI智能体</strong>区别于普通对话AI的最关键一点。它可以调用搜索引擎、数据库、代码执行器、各种API（如天气查询、邮件发送）等外部工具来扩展自己的能力边界。</p><h2>三、动手搭建你的第一个AI Agent（超详细步骤）</h2><p>理论说了这么多，不如亲自试试。我们用目前最流行的开发框架 <strong>LangChain</strong> 来搭建一个最简单的<strong>AI Agent</strong>。</p><h3>步骤1：环境准备与安装</h3><p>首先，你需要一个Python环境（3.8版本以上）。然后，在终端（命令行）里安装必要的库：
+```bash
+pip install langchain openai
+```
+你需要一个OpenAI的API Key（或者其他大模型如文心一言、通义千问的Key），并在代码或环境变量中进行配置。</p><h3>步骤2：定义工具（Tools）</h3><p>工具是<strong>AI Agent</strong>的手和脚。我们先定义两个简单的工具：一个用于搜索，一个用于计算。
+```python
+from langchain.agents import Tool
+from langchain.utilities import SerpAPIWrapper # 需安装并配置SerpAPI
+from langchain.chains import LLMMathChain</p><p>search = SerpAPIWrapper()
+math_chain = LLMMathChain.from_llm(llm) # llm是你的语言模型实例</p><p>tools = [
+    Tool(
+        name = "Search",
+        func=search.run,
+        description="当需要回答关于时事、事实或最新信息的问题时，应使用此工具。"
+    ),
+    Tool(
+        name = "Calculator",
+        func=math_chain.run,
+        description="当需要进行数学计算时，应使用此工具。"
+    )
+]
+```
+<strong>关键点</strong>：给工具的 `description` 写清楚非常重要！<strong>AI Agent</strong>就是靠这些描述来决定何时使用哪个工具的。</p><h3>步骤3：创建并运行Agent</h3><p>现在，把大脑（LLM）、记忆和工具组装起来，创建我们的<strong>AI智能体</strong>。
+```python
+from langchain.agents import initialize_agent, AgentType</p><p>agent = initialize_agent(
+    tools,
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, # 一种常用的Agent类型
+    verbose=True # 开启详细模式，可以观察Agent的思考过程
+)</p><h1>运行Agent！</h1>
+response = agent.run("现在法国的总统是谁？他今年多少岁了？")
+print(response)
+```
+运行后，你会看到Agent先调用“Search”工具搜索现任法国总统，得到“马克龙”和出生年份，然后可能会调用“Calculator”工具计算年龄，最后整合信息给出答案。恭喜，你的第一个<strong>AI代理</strong>已经能自主工作了！</p><h2>四、优缺点对比：AI Agent并非万能</h2><p>在兴奋之余，我们也需要理性看待它的边界。</p><p>| 特性 | 优点 | 缺点/挑战 |
+| :--- | :--- | :--- |
+| <strong>自主性</strong> | 能独立处理多步骤、复杂任务，解放人力。 | 可能产生不可预测的行为，需要严格的监督和测试。 |
+| <strong>能力扩展</strong> | 通过工具集成，能力几乎无限扩展（搜索、数据库、执行代码等）。 | 依赖外部工具的稳定性和API的可用性，工具失效则任务中断。 |
+| <strong>应用场景</strong> | 适合流程化、需要多源信息整合的工作（如研究、数据报告、客服）。 | 简单问答场景杀鸡用牛刀，成本（API调用费）可能更高。 |
+| <strong>开发门槛</strong> | 框架（如LangChain, AutoGen）降低了开发难度。 | 仍需一定的编程基础，调试和优化Agent的“思考链”需要经验。 |</p><h2>五、总结与行动建议</h2><p><strong>AI Agent</strong> 代表了AI应用从“能力提供”走向“任务完成”的范式转变。它不再是被动等待指令的工具，而是能够主动思考和行动的“智能体”。</p><p><strong>给你几点行动建议：</strong></p><p>1.  <strong>从模仿开始</strong>：找到LangChain、AutoGen等框架的官方示例，先跑通一个完整的Agent，直观感受它的“思考-行动”循环。
+2.  <strong>定义真需求</strong>：想想你日常工作或生活中，哪些重复性、多步骤的任务可以交给<strong>AI智能体</strong>？比如自动整理每周行业新闻简报、监控特定网站的价格变动。
+3.  <strong>从小工具集起步</strong>：不要一开始就给Agent绑定几十个工具。先从1-2个最关键的工具（如搜索+代码执行）开始，确保它能稳定工作，再逐步扩展。</p><p>现在，就去亲手创造你的第一个<strong>AI代理</strong>吧。当你看到它自主调用工具为你解决问题的那一刻，你才算真正摸到了未来AI应用的脉搏。</p></article>
+<footer><a href="../index.html">← 返回首页</a> · © 2025 AI工具指南</footer>
+</div>
+</body>
+</html>
