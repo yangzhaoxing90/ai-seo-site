@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://yangzhaoxing90.github.io/ai-seo-site/sitemap.xml
